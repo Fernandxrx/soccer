@@ -1,0 +1,135 @@
+/* Soccer Pro — estilo moderno e clean */
+:root{
+  --bg:#0b1020;
+  --panel:#121a33;
+  --text:#e8ecf7;
+  --muted:#9fb0d6;
+  --accent:#5ee3ff;
+  --accent2:#7bffbd;
+  --danger:#ff6b6b;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+  color:var(--text);
+  background: radial-gradient(1200px 600px at 50% -10%, #1a2458 0%, var(--bg) 50%);
+  overflow:hidden;
+}
+
+.hud{
+  position:fixed; inset:12px 12px auto 12px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px;
+  background: linear-gradient(180deg, rgba(20,30,60,.7), rgba(10,15,30,.35));
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;
+  padding:10px 12px;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+  z-index:10;
+}
+.hud .btn{margin-right:6px}
+.hud-center{display:flex; flex-direction:column; align-items:center; gap:6px;}
+.scoreboard{
+  display:flex; align-items:baseline; gap:10px;
+  font-weight:800; letter-spacing:.04em;
+}
+.scoreboard span{opacity:.95}
+.scoreboard .divider{opacity:.5}
+.timer{
+  font-size:.9rem; color:var(--muted);
+}
+
+.btn{
+  background:#1c2955; color:var(--text);
+  border:1px solid rgba(255,255,255,.08);
+  padding:8px 12px; border-radius:12px;
+  cursor:pointer;
+  box-shadow: var(--shadow);
+  transition: transform .05s ease, background .2s;
+}
+.btn:hover{transform: translateY(-1px); background:#22346b}
+.btn:active{transform: translateY(0)}
+.btn-secondary{background:#182346}
+.btn-primary{background: linear-gradient(90deg, var(--accent), var(--accent2)); color:#041220; border:none}
+.btn.xl{font-size:1.2rem; padding:12px 18px}
+
+.stage-wrap{
+  position:fixed; inset:0;
+  display:grid; place-items:center;
+}
+#game{
+  max-width: 100vw; max-height: 100vh;
+  image-rendering: auto;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.55), inset 0 0 40px rgba(0,0,0,.25);
+  background:#0a3d1c;
+}
+
+.overlay{
+  position:fixed; inset:0;
+  display:none; place-items:center;
+  background: radial-gradient(800px 400px at 50% 20%, rgba(18,26,51,.85), rgba(11,16,32,.7));
+  padding:20px;
+  z-index:20;
+}
+.overlay.visible{display:grid}
+.panel{
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:20px; padding:20px;
+  box-shadow: var(--shadow);
+  max-width: 720px; width: min(92vw, 720px);
+}
+.panel h1{margin:0 0 8px; font-size:2.2rem; letter-spacing:.05em}
+.panel h1 span{background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; color: transparent}
+.panel h2{margin:0 0 12px}
+.panel.ghost{background:transparent; border:none; text-align:center}
+.hint{color:var(--muted)}
+
+.grid.two{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0}
+.field{display:grid; gap:6px; font-size:.95rem}
+.input{
+  background:#0f1733; color:var(--text);
+  border:1px solid rgba(255,255,255,.08);
+  padding:10px 12px; border-radius:12px;
+}
+.toggle{display:flex; align-items:center; gap:10px; margin:10px 0}
+.toggle input{width:18px; height:18px}
+
+.row.gap{display:flex; gap:8px; flex-wrap:wrap}
+
+.help{line-height:1.7}
+
+.footer{
+  position:fixed; inset:auto 12px 12px 12px;
+  display:flex; justify-content:space-between; align-items:center;
+  background:linear-gradient(180deg, rgba(20,30,60,.7), rgba(10,15,30,.35));
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:12px; padding:8px 12px;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+  z-index:10;
+  font-size:.9rem; color:var(--muted);
+}
+.footer a{color:var(--text)}
+
+.touch-controls{
+  position:fixed; inset:auto 12px 72px 12px; display:none;
+  justify-content:space-between; align-items:center; pointer-events:none;
+}
+.joystick{width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); position:relative; pointer-events:auto}
+.joystick .stick{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:70px; height:70px; border-radius:50%; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.12);}
+.buttons{display:flex; gap:10px; pointer-events:auto}
+.btn.touch{width:64px; height:64px; font-size:1.4rem; display:grid; place-items:center}
+
+@media (max-width: 900px){
+  .touch-controls{display:flex}
+  .hud{inset:8px}
+  .footer{inset:auto 8px 8px 8px}
+  .panel{width: min(96vw, 720px)}
+}

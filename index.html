@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Soccer Pro — Jogo de Futebol no Navegador</title>
+  <meta name="description" content="Jogo de futebol 2D com IA, físicas, animações e suporte a desktop e mobile.">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23000'/%3E%3Ccircle cx='32' cy='32' r='28' fill='%23fff'/%3E%3Cpolygon points='32,8 42,18 37,32 27,32 22,18' fill='%23000'/%3E%3Cpolygon points='8,32 18,22 32,27 32,37 18,42' fill='%23000'/%3E%3Cpolygon points='32,56 22,46 27,32 37,32 42,46' fill='%23000'/%3E%3Cpolygon points='56,32 46,42 32,37 32,27 46,22' fill='%23000'/%3E%3C/svg%3E">
+</head>
+<body>
+  <div id="app">
+    <header class="hud">
+      <div class="hud-left">
+        <button id="btnPause" class="btn">⏸ Pausar</button>
+        <button id="btnReset" class="btn btn-secondary">↻ Reiniciar</button>
+      </div>
+      <div class="hud-center">
+        <div class="scoreboard">
+          <span id="homeName">AZUL</span>
+          <span id="homeScore">0</span>
+          <span class="divider">·</span>
+          <span id="awayScore">0</span>
+          <span id="awayName">VERMELHO</span>
+        </div>
+        <div class="timer">
+          ⏱ <span id="matchClock">00:00</span>
+        </div>
+      </div>
+      <div class="hud-right">
+        <button id="btnSettings" class="btn">⚙️ Opções</button>
+        <button id="btnHelp" class="btn btn-secondary">❔ Ajuda</button>
+      </div>
+    </header>
+
+    <main class="stage-wrap">
+      <canvas id="game" width="1280" height="720" aria-label="campo de futebol"></canvas>
+
+      <!-- Overlays -->
+      <section id="overlayStart" class="overlay visible">
+        <div class="panel">
+          <h1>SOCCER <span>PRO</span></h1>
+          <p>Partida 5x5 com IA, físicas e animações. Jogue no teclado ou toque.</p>
+          <div class="grid two">
+            <label class="field">Seu time
+              <select id="selHome" class="input">
+                <option value="blue" selected>Azul</option>
+                <option value="green">Verde</option>
+                <option value="purple">Roxo</option>
+                <option value="orange">Laranja</option>
+              </select>
+            </label>
+            <label class="field">Adversário
+              <select id="selAway" class="input">
+                <option value="red" selected>Vermelho</option>
+                <option value="yellow">Amarelo</option>
+                <option value="teal">Ciano</option>
+                <option value="pink">Rosa</option>
+              </select>
+            </label>
+          </div>
+          <div class="grid two">
+            <label class="field">Dificuldade
+              <select id="selDifficulty" class="input">
+                <option value="easy">Fácil</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Difícil</option>
+              </select>
+            </label>
+            <label class="field">Duração (min)
+              <select id="selDuration" class="input">
+                <option value="2">2</option>
+                <option value="4" selected>4</option>
+                <option value="6">6</option>
+              </select>
+            </label>
+          </div>
+          <button id="btnStart" class="btn btn-primary xl">▶️ Começar</button>
+          <p class="hint">Teclado: WASD/Setas para mover, Shift corre, Espaço chuta. <br> Mobile: joystick + botões.</p>
+        </div>
+      </section>
+
+      <section id="overlayPause" class="overlay">
+        <div class="panel">
+          <h2>Jogo Pausado</h2>
+          <div class="row gap">
+            <button id="btnResume" class="btn btn-primary">▶️ Continuar</button>
+            <button id="btnQuit" class="btn btn-secondary">🏁 Encerrar</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="overlayGoal" class="overlay">
+        <div class="panel ghost">
+          <h2>GOOOOL!</h2>
+          <p id="goalText">Time Azul marcou!</p>
+        </div>
+      </section>
+
+      <section id="overlayHelp" class="overlay">
+        <div class="panel">
+          <h2>Ajuda</h2>
+          <ul class="help">
+            <li><b>Mover:</b> WASD ou Setas. Arraste o joystick no celular.</li>
+            <li><b>Correr:</b> Shift (consome fôlego).</li>
+            <li><b>Chutar/Passar:</b> Espaço ou botão ⚽.</li>
+            <li><b>Mudar jogador:</b> Q ou botão 👟 (o mais próximo da bola).</li>
+            <li><b>Pausar:</b> Esc ou botão ⏸.</li>
+          </ul>
+          <button id="btnCloseHelp" class="btn btn-primary">Entendi</button>
+        </div>
+      </section>
+
+      <section id="overlaySettings" class="overlay">
+        <div class="panel">
+          <h2>Opções</h2>
+          <label class="toggle">
+            <input id="chkVsync" type="checkbox" checked>
+            <span>Limitar FPS (economia de energia)</span>
+          </label>
+          <label class="toggle">
+            <input id="chkParticles" type="checkbox" checked>
+            <span>Partículas e Confetes</span>
+          </label>
+          <label class="toggle">
+            <input id="chkShadows" type="checkbox" checked>
+            <span>Sombras e brilho</span>
+          </label>
+          <div class="row gap">
+            <button id="btnCloseSettings" class="btn btn-primary">Fechar</button>
+            <button id="btnApplySettings" class="btn">Aplicar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mobile Controls -->
+      <div class="touch-controls">
+        <div class="joystick" id="joy">
+          <div class="stick"></div>
+        </div>
+        <div class="buttons">
+          <button class="btn touch" id="btnKick">⚽</button>
+          <button class="btn touch" id="btnSwitch">👟</button>
+          <button class="btn touch" id="btnSprint">🏃</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <span>Soccer Pro — feito para GitHub Pages</span>
+    <a href="#" id="linkHowTo">Como publicar</a>
+  </footer>
+
+  <dialog id="dlgPublish">
+    <article>
+      <h3>Publicar no GitHub Pages</h3>
+      <ol>
+        <li>Crie um repositório <b>público</b> no GitHub (ex.: <i>soccer-pro</i>).</li>
+        <li>Envie estes arquivos para a raiz do repositório.</li>
+        <li>Vá em <b>Settings ➜ Pages</b>, em <b>Source</b> escolha <b>Deploy from a branch</b>, branch <b>main</b>, pasta <b>/ (root)</b>, e salve.</li>
+        <li>Aguarde o deploy e acesse a URL indicada em <b>Pages</b>.</li>
+      </ol>
+      <button class="btn" id="btnCloseDlg">Fechar</button>
+    </article>
+  </dialog>
+
+  <script src="js/game.js" type="module"></script>
+</body>
+</html>
